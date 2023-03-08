@@ -1,0 +1,18 @@
+version: '3.8'
+services:
+  neo4j:
+    image: neo4j:4.4.9
+    container_name: neo4j
+    restart: always
+    ports:
+      - 8090:7474
+      - 7687:7687
+    volumes:
+      - ./graph/data:/data
+    environment: 
+      - NEO4JLABS_PLUGINS=["apoc"]
+      - NEO4J_AUTH=neo4j/newpassword
+      # Raise memory limits
+      - NEO4J_dbms_memory_pagecache_size=1G
+      - NEO4J_dbms.memory.heap.initial_size=500M
+      - NEO4J_dbms_memory_heap_max__size=1G

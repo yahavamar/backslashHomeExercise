@@ -1,0 +1,15 @@
+{
+    "compilerOptions": {
+      "module": "NodeNext",
+      "moduleResolution": "NodeNext",
+      "esModuleInterop": true,
+      "target": "es6",
+      "outDir": "dist",
+      "sourceMap": true,
+      "types": ["neo4j-driver"],
+    },
+    "include": [
+      "src/**/*"
+    ]
+  }
+  
