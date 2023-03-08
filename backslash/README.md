@@ -27,7 +27,7 @@ In addition, there are "edges" which represent the connections between the nodes
 
 1. Clone the repository: 
 ```
-git clone https://github.com/your_username/node-express-typescript.git
+git clone https://github.com/yahavamar/backslashHomeExercise.git
 ```
 2. Navigate to the project directory: 
 ```
