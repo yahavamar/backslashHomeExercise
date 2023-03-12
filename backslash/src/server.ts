@@ -24,12 +24,12 @@ const data: GraphData = JSON.parse(jsonData);
 
 // fix edges data where is not list
 const fixedEdgesData = data.edges.map((edge) => {
-  if (Array.isArray(edge.targets)) {
+  if (Array.isArray(edge.to)) {
     return edge;
   } else {
     return {
-      source: edge.source,
-      targets: [edge.targets],
+      from: edge.from,
+      to: [edge.to],
     };
   }
 });

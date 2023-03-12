@@ -84,9 +84,9 @@ class GraphManager {
             CREATE (from)-[:connectedTo]->(to)
             `;
       
-            for (const dest of edge.targets) {
+            for (const dest of edge.to) {
                 const params = {
-                    from: edge.source,
+                    from: edge.from,
                     to: dest,
                 };
             

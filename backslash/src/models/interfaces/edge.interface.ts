@@ -1,6 +1,6 @@
 
 export interface Edge {
-    source: string;
-    targets: string[];
+    from: string;
+    to: string[];
    
 }

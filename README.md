@@ -15,7 +15,6 @@ In addition, there are "edges" which represent the connections between the nodes
 * Node.js - Express
 * Neo4J
 * Docker
-* Swagger
 ## Installation and Setup
 
 ### Requirements
@@ -58,19 +57,29 @@ npx ts-node-dev dist/server.js
 
 The application will start running on http://localhost:3000.
 
-Navigate to http://localhost:3000/api-docs/ for use Swagger API.
+
+Navigate to http://localhost:3000/graphql.
 
 
 ## API Documentation
 
-### Endpoints
+### Example
 
-- `GET /routes/sinks` - Get list of GraphPath object contains all the routes that ends in Sink
-
-- `GET /routes/sinks/{sinkKind}` - Get list of GraphPath object contains all the routes that ends in Sink by filter kind
-
-- `GET /routes/vulnerabilities` - Get list of GraphPath object contains all the routes that have vulnerabilities
-
-- `GET /routes/publicServiceToSink` - Get list of GraphPath object contains all the routes  that start in a public service and ends in Sink
-
-- `GET /routes/publicServiceToSink/{isPublic}/{sinkKind}` - Get list of GraphPath object contains all the routes that ends in Sink by filter kind
+```
+{
+  returnAllRoutesEndsInSink {
+    source
+    dest
+    segments {
+      source {
+        name
+        kind
+      }
+      dest {
+        name
+        kind
+      }
+    }
+  }
+}
+```
