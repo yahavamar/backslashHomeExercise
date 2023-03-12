@@ -1,6 +1,6 @@
 import neo4j, { Driver, Session } from 'neo4j-driver';
-import { EdgeI } from '../models/interfaces/edge.interface';
-import { NodeI } from '../models/interfaces/node.interface';
+import { Edge } from '../models/interfaces/edge.interface';
+import { Node } from '../models/interfaces/node.interface';
 import {GraphPath} from '../models/graphPath'
 import { Link } from '../models/link';
 
@@ -23,7 +23,6 @@ class GraphManager {
         return GraphManager.instance;
     }
 
-    
     /**
     * Executes a Neo4j query using the current instance's driver and returns the results as an array of objects.
     * @param query - The query to execute in Neo4j.
@@ -40,7 +39,7 @@ class GraphManager {
         }
     }
   
-    public async createNodes(nodes: NodeI[]): Promise<void> {
+    public async createNodes(nodes: Node[]): Promise<void> {
         const session = this.driver.session();
 
         for (const node of nodes) {
@@ -74,7 +73,7 @@ class GraphManager {
        await session.close();
     }
   
-    public async createEdges(edges: EdgeI[]): Promise<void> {
+    public async createEdges(edges: Edge[]): Promise<void> {
         const session = this.driver.session();
     
         for (const edge of edges) {
@@ -85,9 +84,9 @@ class GraphManager {
             CREATE (from)-[:connectedTo]->(to)
             `;
       
-            for (const dest of edge.to) {
+            for (const dest of edge.targets) {
                 const params = {
-                    from: edge.from,
+                    from: edge.source,
                     to: dest,
                 };
             
@@ -118,10 +117,9 @@ class GraphManager {
 
     public async getAllRoutesContainsVulnerabilities(): Promise<GraphPath[]> {
         const session = this.driver.session();
-
+        
         // Get names of all vulnerability nodes in the graph
         const vulnerabilitiesNodes: string[] = await this.getAllVulnerabilitiesNodesNames();
-        
         const paths: GraphPath[] = [];
         
         // Find all paths to and from each vulnerability node, and merge them into a single path
@@ -202,6 +200,21 @@ class GraphManager {
         return records;
     }
 
+    public async getAllPathsFromSourceNode(params: Record<string, any>): Promise<any[]> {
+        const session = this.driver.session();
+        const query = `
+        MATCH p=(m:Node {name: $name})-[*0..]->(root)
+        WHERE NOT (root)-->()
+        RETURN p;
+        `;
+
+        const records = await this.runQuery(query, params);
+      
+        await session.close();
+
+        return records;
+    }
+
     public async getAllNodesNamesOfKind(kinds: string[]): Promise<string[]>{
         const names: string[] = [];
         const session = this.driver.session();
@@ -222,21 +235,6 @@ class GraphManager {
         return names;
     }
 
-    public async getAllPathsFromSourceNode(params: Record<string, any>): Promise<any[]> {
-        const session = this.driver.session();
-        const query = `
-        MATCH p=(m:Node {name: $name})-[*0..]->(root)
-        WHERE NOT (root)-->()
-        RETURN p;
-        `;
-
-        const records = await this.runQuery(query, params);
-      
-        await session.close();
-
-        return records;
-    }
-
     public async deleteGraph(): Promise<void>{
         const session = this.driver.session();
         const query = `MATCH (n) DETACH DELETE n`;
@@ -248,8 +246,8 @@ class GraphManager {
           const source: string = record.p.start.properties.name;
           const dest: string = record.p.end.properties.name;
           const links: Link[] = record.p.segments.map((segment) => {
-            const sourceNode: NodeI = {...segment.start.properties};
-            const destNode: NodeI = {...segment.end.properties};
+            const sourceNode: Node = {...segment.start.properties};
+            const destNode: Node = {...segment.end.properties};
             return new Link(sourceNode, destNode);
           });
           return new GraphPath(source, dest, links);

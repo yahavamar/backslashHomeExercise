@@ -1,8 +1,8 @@
-import { EdgeI } from "./edge.interface";
-import { NodeI } from "./node.interface";
+import { Edge } from "./edge.interface";
+import { Node } from "./node.interface";
 
 
 export interface GraphData {
-    nodes: NodeI[];
-    edges: EdgeI[];
+    nodes: Node[];
+    edges: Edge[];
   }

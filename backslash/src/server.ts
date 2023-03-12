@@ -3,18 +3,17 @@ import bodyParser from 'body-parser';
 import cors from 'cors';
 import fs from 'fs';
 import graphManager from './managers/graph.manager'
-import swaggerUi from 'swagger-ui-express';
-import { swaggerSpec } from './swagger/swagger';
-import routes from './routers/routes';
 import * as path from 'path';
 import { GraphData } from './models/interfaces/graph-data.interface';
+import RootQueryType from './models/schemas/root-query';
 
 const dataFile = path.resolve('./src/data/train-ticket-be.json');
 
+const { GraphQLSchema } = require('graphql');
+const { graphqlHTTP } = require('express-graphql');     
+
 const app = express();
 const port = 3000;
-
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
@@ -23,14 +22,14 @@ app.use(cors());
 const jsonData = fs.readFileSync(dataFile, 'utf-8');
 const data: GraphData = JSON.parse(jsonData);
 
-// fix edges data 
-const edges2 = data.edges.map((edge) => {
-  if (Array.isArray(edge.to)) {
+// fix edges data where is not list
+const fixedEdgesData = data.edges.map((edge) => {
+  if (Array.isArray(edge.targets)) {
     return edge;
   } else {
     return {
-      from: edge.from,
-      to: [edge.to],
+      source: edge.source,
+      targets: [edge.targets],
     };
   }
 });
@@ -39,7 +38,7 @@ async function buildGraph() {
   try {
     await graphManager.deleteGraph();
     await graphManager.createNodes(data.nodes);
-    await graphManager.createEdges(edges2);
+    await graphManager.createEdges(fixedEdgesData);
   } catch (error) {
     console.error(error);
   }
@@ -47,7 +46,17 @@ async function buildGraph() {
 
 buildGraph();
 
-app.use('/', routes);
+const schema = new GraphQLSchema({
+  query: RootQueryType
+});
+
+app.use(
+  '/graphql',
+  graphqlHTTP({
+    schema: schema,
+    graphiql: true,
+  })
+);
 
 app.listen(port, () => {
   console.log(`Server listening on port ${port}.`);

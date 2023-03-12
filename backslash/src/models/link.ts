@@ -1,10 +1,10 @@
-import { NodeI } from "./interfaces/node.interface";
+import { Node } from "./interfaces/node.interface";
 
 export class Link {
-    source: NodeI;
-    dest: NodeI;
+    source: Node;
+    dest: Node;
 
-    constructor(source: NodeI, dest: NodeI){
+    constructor(source: Node, dest: Node){
         this.source = source;
         this.dest = dest;
     }

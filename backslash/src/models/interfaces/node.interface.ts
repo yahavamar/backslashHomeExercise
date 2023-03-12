@@ -1,13 +1,13 @@
-import { MetadataI } from './metadata.interface';
-import { VulnerabilityI } from './vulnerability.interface';
+import { Metadata } from './metadata.interface';
+import { Vulnerability } from './vulnerability.interface';
 
-export interface NodeI{
+export interface Node{
     name: string;
     kind: string; 
     language?: string;
     path?: string;
     publicExposed?: boolean;
-    vulnerabilities?: VulnerabilityI[];
-    metadata?: MetadataI
+    vulnerabilities?: Vulnerability[];
+    metadata?: Metadata
 
 }
